@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Tarea;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
 
 class TareaController extends Controller
 {
@@ -20,7 +22,7 @@ class TareaController extends Controller
             'autor_id' => 'required|integer',
             'usuario_asignado_id' => 'nullable|integer',
             'fecha_expiracion' => 'nullable|date',
-            'categorias' => 'array' // IDs de categorías opcionales
+            'categorias' => 'array' 
         ]);
 
         $tarea = Tarea::create($request->only([
@@ -30,6 +32,12 @@ class TareaController extends Controller
         if ($request->has('categorias')) {
             $tarea->categorias()->sync($request->categorias);
         }
+
+        Http::post('http://localhost:8002/api/historial', [
+        'tarea_id' => $tarea->id,
+        'usuario_id' => $request->autor_id,
+        'accion' => 'creacion'
+        ]);
 
         return response()->json($tarea->load('categorias'), 201);
     }
@@ -52,6 +60,12 @@ class TareaController extends Controller
             $tarea->categorias()->sync($request->categorias);
         }
 
+        Http::post('http://localhost:8002/api/historial', [
+        'tarea_id' => $tarea->id,
+        'usuario_id' => $request->autor_id,
+        'accion' => 'actualizacion'
+        ]);
+
         return response()->json($tarea->load('categorias'));
     }
 
@@ -59,6 +73,12 @@ class TareaController extends Controller
     {
         $tarea = Tarea::findOrFail($id);
         $tarea->delete();
+
+        Http::post('http://localhost:8002/api/historial', [
+        'tarea_id' => $tarea->id,
+        'usuario_id' => $request->autor_id,
+        'accion' => 'eliminacion'
+    ]);
 
         return response()->json(['message' => 'Tarea eliminada']);
     }
