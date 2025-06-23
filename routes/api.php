@@ -7,6 +7,8 @@ use App\Http\Controllers\ComentarioController;
 Route::apiResource('tareas', TareaController::class);
 Route::apiResource('categorias', CategoriaController::class)->except(['show']);
 Route::apiResource('comentarios', ComentarioController::class)->except(['show']);
-
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('tareas', TareaController::class);
+});
 
 ?>
