@@ -76,7 +76,7 @@ class TareaController extends Controller
 
         Http::post('http://localhost:8002/api/historial', [
         'tarea_id' => $tarea->id,
-        'usuario_id' => $request->autor_id,
+        'usuario_id' => $tarea->autor_id,
         'accion' => 'eliminacion'
     ]);
 
